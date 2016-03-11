@@ -116,8 +116,8 @@ public class ExpParser {
 			
 			if (parts.length>=8)
 			{
-				nTc = Integer.parseInt(parts[8]);	
-				stopTimeout = Integer.parseInt(parts[7]);
+				nTc = Integer.parseInt(parts[7]);
+				stopTimeout = Integer.parseInt(parts[8]);
 			}
 			
 			cont++;
