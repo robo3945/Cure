@@ -251,7 +251,6 @@ public class Agent {
 			if (parserError)
 			{
 				printHelp(options);
-				return;
 			}
 			
 		} catch (ParseException exp)

@@ -53,9 +53,8 @@ public abstract class AbstractChallengeResponse implements Serializable{
 		
 		if (salt == null)
 			salt = SecUtils.getB64(SecUtils.getRandomBytes(SecUtils.getSeedAsString(), Context.saltLenght));
-		
-		String hash = makeHash(cpwd, salt);	
-		return hash;
+
+		return makeHash(cpwd, salt);
 	}
 	
 	
@@ -103,11 +102,8 @@ public abstract class AbstractChallengeResponse implements Serializable{
 	public boolean match(String challenge, String response) {
 		
 		String newResponse = doResponse(challenge);
-		if (newResponse.equals(response))
-			return true;
-		
-		return false;
-		
+		return newResponse.equals(response);
+
 	}
 	
 

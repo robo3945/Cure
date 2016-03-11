@@ -58,9 +58,7 @@ public final class SymKeyMgr {
 			
 			// Write keys on disk
 			skm = new SymKeyGenerator(new File(keyStorePath));
-			String path = skm.serializeToDisk(skm.makeKeys(numberKeys));
-			
-			return path;
+			return skm.serializeToDisk(skm.makeKeys(numberKeys));
 			
 		} catch (IOException e) {
             Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
@@ -107,9 +105,7 @@ public final class SymKeyMgr {
 						
 			// read keys from the disk
 			skm = new SymKeyGenerator(new File(path));
-			ArrayList<byte[]> sa = skm.deserializeFromDisk();
-			
-			return sa;
+			return skm.deserializeFromDisk();
 			
 		} catch (IOException e) {
             Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));

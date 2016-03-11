@@ -88,14 +88,13 @@ public class TcTracer {
 	public static String getNowTimestamp() 
 	{
 		Calendar cal = new GregorianCalendar();
-        String datepart = String.format("%04d", cal.get(Calendar.YEAR))+
+        return String.format("%04d", cal.get(Calendar.YEAR))+
         String.format("%02d", cal.get(Calendar.MONTH)+1)+
         		String.format("%02d", cal.get(Calendar.DAY_OF_MONTH))+"-"+
         				String.format("%02d", cal.get(Calendar.HOUR_OF_DAY))+"_"+
         						String.format("%02d", cal.get(Calendar.MINUTE))+"_"+
         								String.format("%02d", cal.get(Calendar.SECOND))+"_"+
         										String.format("%04d", cal.get(Calendar.MILLISECOND));
-		return datepart;
 	}
 	
 	/**

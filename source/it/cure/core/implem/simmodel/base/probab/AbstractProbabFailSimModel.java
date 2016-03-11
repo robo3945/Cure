@@ -66,10 +66,8 @@ public abstract class AbstractProbabFailSimModel extends AbstractProbabSimModel 
 		// it returns false (fail) if the extraced number is between 0 and n-1, otherwise true if >n and <"scale"
 		
 		//double mul = scale*this.factor;
-		if (res < probabFalsePercent * this.factor)
-			return false;
-		
-		return true;
+		return res >= probabFalsePercent * this.factor;
+
 	}
 
 }

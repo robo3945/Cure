@@ -52,7 +52,7 @@ public enum ENodeType {
 	/**
 	 * Default Constructor
 	 */
-	private ENodeType(String value) {
+	ENodeType(String value) {
 		this.intValue = value;
 	}
 	
