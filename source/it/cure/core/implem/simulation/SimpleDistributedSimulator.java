@@ -319,6 +319,10 @@ public class SimpleDistributedSimulator extends AbstractSimulator {
 				i++;
 			}
 		}
+		catch (NumberFormatException e)
+		{
+			Context.getInstance().getLogger().info("Configuration file read");
+		}
 		catch (Exception e)
 		{
 			Context.getInstance().getLogger().info("host configuration file: end of file reached");

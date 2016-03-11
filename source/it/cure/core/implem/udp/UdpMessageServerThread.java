@@ -107,7 +107,7 @@ public class UdpMessageServerThread extends AbstractMessageServerThread
     	byte[] msgBuf = null;
     	SecEnvelope sece = null;
     	int contRecvNumPacket =0;
-    	Context.getInstance().getLogger().error("Server thread STARTED");
+    	Context.getInstance().getLogger().info("Server thread STARTED");
     	
         do 
         {
@@ -194,7 +194,6 @@ public class UdpMessageServerThread extends AbstractMessageServerThread
 	 * Send the response
 	 * 
 	 * @param msg
-	 * @param packet
 	 * @throws IOException
 	 * @throws InvalidKeyException
 	 * @throws NoSuchAlgorithmException

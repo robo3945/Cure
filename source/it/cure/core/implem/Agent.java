@@ -26,7 +26,9 @@ package it.cure.core.implem;
 
 import it.cure.core.implem.security.keys.SymKeyMgr;
 import it.cure.core.implem.simmodel.AlwaysTrueSimulationModel;
+import it.cure.core.implem.simulation.AbstractSimulator;
 import it.cure.core.implem.simulation.SimpleDistributedSimulator;
+import it.cure.core.implem.simulation.SimpleLocalSimulator;
 import it.cure.core.interfaces.model.ISimulationModel;
 
 import java.io.IOException;
@@ -58,16 +60,16 @@ public class Agent {
 		String tracesDir =null;
 		String topologyFile =null;
 		int startPort = 0;
-		int numKeys = 0;
+		int numKeys;
 		boolean parserError = false;
-	    
-		Context.getInstance().getLogger().info("Heap max:"+ ((Runtime.getRuntime().maxMemory()/1024)/1024)+" MB");
-		Context.getInstance().getLogger().info("Free memory:"+ ((Runtime.getRuntime().freeMemory()/1024)/1024)+" MB");
-		Context.getInstance().getLogger().info("Totale memory:"+ ((Runtime.getRuntime().totalMemory()/1024)/1024)+" MB");
-		
 		
 		Options options = new Options();
-		
+
+		// Key store
+		options.addOption("lsim", "localSim", false, "Local Simulation: does not use the topologyFile; use the startUdpPort & tcNumber options");
+		options.addOption("dsim", "distSim", false, "Distributed Simulation");
+
+
 		// Key store
 		options.addOption("k", "createKeyStore", true, "KEYSTORE: create the keystore");
 		options.addOption("kn", "numkeysToCreate", true, "KEYSTORE: number of keys to create");
@@ -101,12 +103,15 @@ public class Agent {
 			}
 			
 			// Topology Based
-			if (line.hasOption("tf"))
+			if (line.hasOption("dsim"))
 			{
 				topologyFile = line.getOptionValue("tf");
+				Context.getInstance().getLogger().info("Args: Topology file is: "+line.getOptionValue("tf"));
+
 				if (line.hasOption("tIp"))
 				{
 					Context.getInstance().setLocalIp(line.getOptionValue("tIp"));
+					Context.getInstance().getLogger().info("Args: local ip is: "+line.getOptionValue("tIp"));
 				}
 				else
 				{
@@ -115,48 +120,59 @@ public class Agent {
 					return;
 				}
 			}
-			else
+			else if (line.hasOption("lsim"))
+			{
 				// the local simulator parameters
-				if (line.hasOption("nTc"))
-				{
-						Context.TC_NUMBER = Integer.parseInt(line.getOptionValue("nTc"));
-						
-						if (line.hasOption("sp"))
-						{
-							startPort = Integer.parseInt(line.getOptionValue("sp"));
-						}
-						else
-						{
-							Context.getInstance().getLogger().error("You need to specify the starting UDP port");
-							printHelp(options);
-							return;
-						}
-				}				
-				else
-				// Create the key stores
-					if (line.hasOption("k"))
-					{
-						keyStorePath = line.getOptionValue("k");						
-						if (line.hasOption("kn"))
-						{
-							numKeys = Integer.parseInt(line.getOptionValue("kn"));
-							String path = SymKeyMgr.createKeyStore(keyStorePath, numKeys);
-							Context.getInstance().getLogger().info("KeyStoreFile created. See in \""+path+"\"");
-							return;					
-						}
-						else
-						{
-							Context.getInstance().getLogger().error("You need the number of keys to create");
-							printHelp(options);
-							return;
-						}
-					}
+				if (line.hasOption("nTc")) {
+					Context.TC_NUMBER = Integer.parseInt(line.getOptionValue("nTc"));
+					Context.getInstance().getLogger().info("Args: TC number is: "+line.getOptionValue("nTc"));
 
+					if (line.hasOption("sp")) {
+						startPort = Integer.parseInt(line.getOptionValue("sp"));
+						Context.getInstance().getLogger().info("Args: Start port is: "+line.getOptionValue("sp"));
+
+					} else {
+						Context.getInstance().getLogger().error("You need to specify the starting UDP port");
+						printHelp(options);
+						return;
+					}
+				}
+				else
+				{
+					Context.getInstance().getLogger().error("localSim needs a TC Number");
+					printHelp(options);
+					return;
+				}
+			}
+			// Create the key stores
+			else if (line.hasOption("k")) {
+				keyStorePath = line.getOptionValue("k");
+				Context.getInstance().getLogger().info("Args: create keystore: "+line.getOptionValue("k"));
+
+				if (line.hasOption("kn")) {
+					numKeys = Integer.parseInt(line.getOptionValue("kn"));
+					String path = SymKeyMgr.createKeyStore(keyStorePath, numKeys);
+					Context.getInstance().getLogger().info("Args: keys number: "+line.getOptionValue("kn"));
+					Context.getInstance().getLogger().info("KeyStoreFile created. See in \"" + path + "\"");
+					return;
+				} else {
+					Context.getInstance().getLogger().error("You need the number of keys to create");
+					printHelp(options);
+					return;
+				}
+			}
+			else
+			{
+				Context.getInstance().getLogger().error("You need to specify the type of the simulation (lsim|dsim) or manage a keystore (k)");
+				printHelp(options);
+				return;
+			}
 			
 			// General option
 			if (line.hasOption("kp"))
 			{
 				keyStorePath = line.getOptionValue("kp");
+				Context.getInstance().getLogger().info("Args: keystore path is: "+line.getOptionValue("kp"));
 			}
 			else
 			{
@@ -167,6 +183,7 @@ public class Agent {
 			if (line.hasOption("d"))
 			{
 				Context.UNTIL_STOP_SECS = Integer.parseInt(line.getOptionValue("d"));
+				Context.getInstance().getLogger().info("Args: delay is: "+line.getOptionValue("d"));
 			}
 			else
 			{
@@ -178,6 +195,7 @@ public class Agent {
 			if (line.hasOption("td"))
 			{
 				tracesDir = line.getOptionValue("td");
+				Context.getInstance().getLogger().info("Args: Trace dir is: "+line.getOptionValue("td"));
 			}
 			else
 			{
@@ -188,12 +206,17 @@ public class Agent {
 			if (line.hasOption("cfg"))
 			{
 				Context.configFile = line.getOptionValue("cfg");
+				Context.getInstance().getLogger().info("Args: config file is: "+line.getOptionValue("cfg"));
 				try {
 					Context.setGeneralConfigProperties(Context.configFile);
-					Context.getInstance().getLogger().info("Using configuration file: GENERAL");
+					Context.getInstance().getLogger().info("Using configuration file: "+Context.configFile);
 					
 					// Start the simulation!
-					
+
+					Context.getInstance().getLogger().info("Heap max:"+ ((Runtime.getRuntime().maxMemory()/1024)/1024)+" MB");
+					Context.getInstance().getLogger().info("Free memory:"+ ((Runtime.getRuntime().freeMemory()/1024)/1024)+" MB");
+					Context.getInstance().getLogger().info("Totale memory:"+ ((Runtime.getRuntime().totalMemory()/1024)/1024)+" MB");
+
 					Context.getInstance().getLogger().info("Starting the simulation...");
 					
 					try {
@@ -204,34 +227,31 @@ public class Agent {
 						// ------- SimulationModel for the Guests
 						@SuppressWarnings("unchecked")
 						Class<ISimulationModel> cG = (Class<ISimulationModel>) Class.forName(Context.GUEST_SIM_MODEL.trim());
-						ISimulationModel simModelGuests = (ISimulationModel) cG.getDeclaredConstructor(double.class, double.class).newInstance(Context.FAIL_PROB_GUESTS, Context.HACK_PROB_GUESTS);
+						ISimulationModel simModelGuests = cG.getDeclaredConstructor(double.class, double.class).newInstance(Context.FAIL_PROB_GUESTS, Context.HACK_PROB_GUESTS);
 						
 						// ------- SimulationModel for the Hosts
 						@SuppressWarnings("unchecked")
 						Class<ISimulationModel> cH = (Class<ISimulationModel>) Class.forName(Context.HOST_SIM_MODEL.trim());
-						ISimulationModel simModelHosts = (ISimulationModel) cH.getDeclaredConstructor(double.class, double.class).newInstance(Context.FAIL_PROB_HOSTS, Context.HACK_PROB_HOSTS);
+						ISimulationModel simModelHosts = cH.getDeclaredConstructor(double.class, double.class).newInstance(Context.FAIL_PROB_HOSTS, Context.HACK_PROB_HOSTS);
 						
 						// ------- SimuationModel for the CC
 						
 						// XXX: This means that the CC does not FAIL! So there aren't errors packets on Guest!
 						ISimulationModel simModelCC = new AlwaysTrueSimulationModel();
+
+						if (line.hasOption("dsim")) {
+							SimpleDistributedSimulator simulator = new SimpleDistributedSimulator(tracesDir);
+							simulator.nGuestOneCC(topologyFile, keyStorePath,  simModelGuests, simModelHosts, simModelCC, StringUtils.join(args," "));
+						}
+						else if (line.hasOption("lsim"))
+						{
+							SimpleLocalSimulator simulator = new SimpleLocalSimulator(tracesDir);
+							simulator.nGuestAndOneCC(keyStorePath, startPort, Context.TC_NUMBER, simModelGuests, simModelHosts, simModelCC, StringUtils.join(args," "));
+						}
+
+
 						
-						SimpleDistributedSimulator simulator = new SimpleDistributedSimulator(tracesDir);
-						simulator.nGuestOneCC(topologyFile, keyStorePath,  simModelGuests, simModelHosts, simModelCC, StringUtils.join(args," "));
-						
-					} catch (ClassNotFoundException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (InstantiationException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (IllegalAccessException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (IllegalArgumentException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (SecurityException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (InvocationTargetException e) {
-						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
-					} catch (NoSuchMethodException e) {
+					} catch (Exception e) {
 						Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
 					}
 					

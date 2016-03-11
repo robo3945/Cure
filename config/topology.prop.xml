@@ -32,7 +32,7 @@ SOFTWARE.
     
     <!-- it's the Cloud Controller machine -->
     
-    <entry key="VM-0">10.37.129.2</entry>
+    <entry key="VM-0">127.0.0.1</entry>
     <entry key="STARTPORT-0">60000</entry>
     <entry key="NUMTC-0">1</entry>
     

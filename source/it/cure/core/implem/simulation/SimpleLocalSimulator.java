@@ -99,8 +99,17 @@ public class SimpleLocalSimulator extends AbstractSimulator {
 
 		String datepart = TcTracer.getNowTimestamp();
 		String tracepath = pathForTrace + "/"+datepart+"_"+Context.UNTIL_STOP_SECS;
-		
+
+
+		try {
+			Context.setConfigProperties(Context.configFile, true);
+			Context.getInstance().getLogger().info("Using configuration file: GENERAL");
+		} catch (IOException e) {
+			Context.getInstance().getLogger().error(ExceptionUtils.getStackTrace(e));
+		}
+
 		// ---------- CC
+
 		TcDataController mrCC = new TcDataController("ccTC",	tracepath, runArgs);
 		
 		ISimulationModel[] arSimModelCC = new ISimulationModel[] { simModelCC };

@@ -18,3 +18,9 @@
 .idea/workspace.xml
 
 Cure.iml
+
+*.class
+
+*.log
+
+bin/prop/log4j.xml

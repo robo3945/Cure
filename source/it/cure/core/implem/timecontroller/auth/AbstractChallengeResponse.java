@@ -40,7 +40,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 public abstract class AbstractChallengeResponse implements Serializable{
 
 	private static final long serialVersionUID = -6619462504654886503L;
-	// TODO: static password
+	// TODO: static password for the challenge/response auth
 	private static String password="secretpasswordtoprotect";
 	protected String salt;
 		
