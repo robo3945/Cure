@@ -1,4 +1,4 @@
-# Cure # 
+# Cure #
 CURE - Towards Enforcing a Reliable Timeline for Cloud Forensics: model, architecture, and experiments
 
 Roberto Battistoni(a), Roberto Di Pietro(b), Flavio Lombardi(c)
@@ -13,7 +13,7 @@ A malicious alteration of system-provided timeline can negatively affect the rel
 
 Keywords: cloud computing, digital forensics, timeline validation, modeling, measurement and simulation, experimental test-beds and research platforms.
 
-## HowTo ## 
+## HowTo ##
 
 Local Simulation args for the *Java Cure.jar*: 
 "-lsim -nTc 10 -sp 50000 -kp ./cure.keystore -tf ./config/topology.prop.xml -tIp 127.0.0.1 -d 60 -td ../traces/ -cfg ./config/config.prop.xml"
