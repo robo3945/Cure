@@ -15,17 +15,17 @@ Keywords: cloud computing, digital forensics, timeline validation, modeling, mea
 
 ## Project sources tree ##
 
-..* .\config: xml configuration files
-..*     - config.prop.xml: Agent configuration parameters
-..*     - topology.prop.xml: defines the VMs in the real cloud for the deploy & run of the testbed
-..* .\lib: dependencies for the Java application (Apache commons lib and Log4j)
-..* .\scripts: bash scripts for the testbed on a real cloud (we have used Amazon EC2)
-..* .\source: Java sources for the Cure.jar
-..* .\res: Java resources 
+* .\config: xml configuration files
+*     - config.prop.xml: Agent configuration parameters
+*     - topology.prop.xml: defines the VMs in the real cloud for the deploy & run of the testbed
+* .\lib: dependencies for the Java application (Apache commons lib and Log4j)
+* .\scripts: bash scripts for the testbed on a real cloud (we have used Amazon EC2)
+* .\source: Java sources for the Cure.jar
+* .\res: Java resources 
 
 ## HowTo ##
 
 These are two example of command line args for the Java Agent and for the Java Parser that parses the Agents log to get the final outcomes:
 
-..* Local Simulation args for the *Java Cure.jar*: *"-lsim -nTc 10 -sp 50000 -kp ./cure.keystore -tf ./config/topology.prop.xml -tIp 127.0.0.1 -d 60 -td ../traces/ -cfg ./config/config.prop.xml"*
-..* Distributed Simulation args for the *Java Parser.jar*: *"../traces/"*
+* Local Simulation args for the *Java Cure.jar*: *"-lsim -nTc 10 -sp 50000 -kp ./cure.keystore -tf ./config/topology.prop.xml -tIp 127.0.0.1 -d 60 -td ../traces/ -cfg ./config/config.prop.xml"*
+* Distributed Simulation args for the *Java Parser.jar*: *"../traces/"*
